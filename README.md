@@ -1,5 +1,7 @@
 # fullstack4j Spring Boot Starter
 
+**[Project page](https://danielbartl.github.io/fullstack4j-spring-boot-starter/)**
+
 One dependency for a [fullstack4j](https://fullstack4j.dev) application: **Apache Wicket** with the
 [Wicket Spring Boot Starter](https://github.com/danielbartl/wicket-spring-boot-starter),
 [**Wicket Oat**](https://github.com/danielbartl/wicket-oat), **Spring Modulith** and **MongoDB**, at
@@ -224,7 +226,8 @@ with Docker running for the MongoDB tests.
 Releases go to Maven Central through the Central Portal, from the Release workflow. Pushing a tag
 releases the version it names, while `main` stays on the next `-SNAPSHOT`:
 
-1. Update the version in the README's dependency snippets and compatibility matrix, then commit.
+1. Update the version in the README's dependency snippets and compatibility matrix, and in the
+   project page (`docs/index.html`), then commit.
 2. Tag and push:
    ```bash
    git tag vX.Y.Z

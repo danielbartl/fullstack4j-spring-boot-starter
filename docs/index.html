@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<!--
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>fullstack4j Spring Boot Starter</title>
+	<meta name="description" content="The fullstack4j stack in two dependencies: Apache Wicket with Wicket Oat, Spring Modulith and MongoDB at versions that work together on Spring Boot 4.1, plus a test starter with a MongoDB replica set from Testcontainers.">
+	<meta property="og:title" content="fullstack4j Spring Boot Starter">
+	<meta property="og:description" content="The fullstack4j stack, in two dependencies.">
+	<meta property="og:image" content="https://fullstack4j.dev/assets/og.png">
+	<link rel="icon" type="image/svg+xml" href="logo.svg">
+	<style>
+		:root {
+			--bg: #fbfaf8;
+			--bg-soft: #f3f1ed;
+			--surface: #ffffff;
+			--text: #1d1b19;
+			--text-soft: #57524c;
+			--text-faint: #8a847d;
+			--border: #e6e2dc;
+			--wicket: #ea4d0e;
+			--wicket-soft: #fde9df;
+			--wicket-text: #b83a08;
+			--spring: #4c8a2a;
+			--spring-soft: #e5f2dc;
+			--code-bg: #16181d;
+			--code-text: #e6e3de;
+			--code-border: #262a31;
+			--shadow: 0 1px 2px rgba(29, 27, 25, .05), 0 8px 24px rgba(29, 27, 25, .06);
+			--radius: 14px;
+			--mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+			--sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			color-scheme: light;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:root:not([data-theme="light"]) {
+				--bg: #111214;
+				--bg-soft: #17191c;
+				--surface: #1b1d21;
+				--text: #eceae6;
+				--text-soft: #b3aea7;
+				--text-faint: #827d76;
+				--border: #2b2e33;
+				--wicket: #ff6a2c;
+				--wicket-soft: #3a1f14;
+				--wicket-text: #ff8c5a;
+				--spring: #7cc152;
+				--spring-soft: #1e2e17;
+				--code-bg: #0b0c0e;
+				--code-text: #e6e3de;
+				--code-border: #24272c;
+				--shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+				color-scheme: dark;
+			}
+		}
+
+		:root[data-theme="dark"] {
+			--bg: #111214;
+			--bg-soft: #17191c;
+			--surface: #1b1d21;
+			--text: #eceae6;
+			--text-soft: #b3aea7;
+			--text-faint: #827d76;
+			--border: #2b2e33;
+			--wicket: #ff6a2c;
+			--wicket-soft: #3a1f14;
+			--wicket-text: #ff8c5a;
+			--spring: #7cc152;
+			--spring-soft: #1e2e17;
+			--code-bg: #0b0c0e;
+			--code-text: #e6e3de;
+			--code-border: #24272c;
+			--shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+			color-scheme: dark;
+		}
+
+		*, *::before, *::after { box-sizing: border-box; }
+
+		html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+		body {
+			margin: 0;
+			background: var(--bg);
+			color: var(--text);
+			font: 16px/1.65 var(--sans);
+			-webkit-font-smoothing: antialiased;
+			overflow-x: hidden;
+		}
+
+		a { color: var(--wicket-text); text-underline-offset: 3px; }
+		a:hover { color: var(--wicket); }
+
+		:focus-visible { outline: 2px solid var(--wicket); outline-offset: 3px; border-radius: 4px; }
+
+		.skip { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 8px 14px; z-index: 100; }
+		.skip:focus { left: 16px; }
+
+		.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+		code {
+			font: .88em/1.5 var(--mono);
+			background: var(--bg-soft);
+			border: 1px solid var(--border);
+			border-radius: 6px;
+			padding: .1em .38em;
+			overflow-wrap: break-word;
+		}
+
+		/* ---------- navigation ---------- */
+
+		.nav {
+			position: sticky; top: 0; z-index: 50;
+			background: color-mix(in srgb, var(--bg) 82%, transparent);
+			backdrop-filter: saturate(160%) blur(12px);
+			-webkit-backdrop-filter: saturate(160%) blur(12px);
+			border-bottom: 1px solid var(--border);
+		}
+		.nav .wrap { display: flex; align-items: center; gap: 24px; height: 64px; }
+		.brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 650; letter-spacing: -.01em; white-space: nowrap; }
+		.brand img { width: 30px; height: 30px; }
+		.nav-links { display: flex; gap: 22px; margin-left: auto; align-items: center; }
+		.nav-links a { color: var(--text-soft); text-decoration: none; font-size: .94rem; }
+		.nav-links a:hover { color: var(--text); }
+		.theme-toggle {
+			border: 1px solid var(--border); background: var(--surface); color: var(--text-soft);
+			width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: grid; place-items: center;
+		}
+		.theme-toggle:hover { color: var(--text); }
+		.theme-toggle svg { width: 18px; height: 18px; }
+
+		@media (max-width: 760px) {
+			.nav-links a:not(.keep) { display: none; }
+			.nav .wrap { gap: 12px; }
+		}
+		@media (max-width: 440px) { .brand-long { display: none; } }
+
+		/* ---------- hero ---------- */
+
+		.hero { position: relative; padding: 88px 0 72px; overflow: hidden; }
+		.hero::before {
+			content: ""; position: absolute; inset: -40% -10% auto -10%; height: 140%; z-index: -1;
+			background:
+				radial-gradient(40% 45% at 18% 30%, color-mix(in srgb, var(--wicket) 22%, transparent), transparent 70%),
+				radial-gradient(35% 40% at 85% 20%, color-mix(in srgb, var(--spring) 20%, transparent), transparent 70%);
+			filter: blur(10px);
+		}
+		.hero-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; align-items: center; }
+		.hero .code pre { font-size: 13px; }
+		.eyebrow {
+			display: inline-flex; align-items: center; gap: 8px;
+			font-size: .82rem; font-weight: 600; letter-spacing: .02em;
+			color: var(--wicket-text); background: var(--wicket-soft);
+			padding: 5px 12px; border-radius: 999px;
+		}
+		.eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--spring); }
+		h1 {
+			font-size: clamp(2.2rem, 4.6vw, 3.25rem); line-height: 1.07; letter-spacing: -.035em;
+			margin: 20px 0 18px; font-weight: 750;
+		}
+		h1 .accent {
+			background: linear-gradient(95deg, var(--wicket) 10%, #f08a24 55%, var(--spring) 100%);
+			-webkit-background-clip: text; background-clip: text; color: transparent;
+		}
+		.lead { font-size: 1.16rem; color: var(--text-soft); max-width: 36em; margin: 0 0 30px; }
+		.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+		.btn {
+			display: inline-flex; align-items: center; gap: 8px;
+			padding: 12px 20px; border-radius: 11px; font-weight: 600; text-decoration: none;
+			border: 1px solid transparent; transition: transform .15s ease, box-shadow .15s ease;
+		}
+		.btn:hover { transform: translateY(-1px); }
+		.btn-primary { background: var(--wicket); color: #fff; box-shadow: 0 6px 18px color-mix(in srgb, var(--wicket) 35%, transparent); }
+		.btn-primary:hover { color: #fff; }
+		.btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+		.btn-secondary:hover { color: var(--text); }
+		.btn svg { width: 18px; height: 18px; }
+		.hero-meta { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--text-faint); font-size: .9rem; }
+		.hero-meta span { display: inline-flex; align-items: center; gap: 7px; }
+		.hero-meta svg { width: 16px; height: 16px; color: var(--spring); }
+
+		@media (max-width: 900px) {
+			.hero { padding: 56px 0 48px; }
+			.hero-grid { grid-template-columns: 1fr; gap: 36px; }
+		}
+
+		/* ---------- code blocks ---------- */
+
+		.code {
+			position: relative; background: var(--code-bg); color: var(--code-text);
+			border: 1px solid var(--code-border); border-radius: var(--radius);
+			box-shadow: var(--shadow); overflow: hidden; min-width: 0;
+		}
+		.code-head {
+			display: flex; align-items: center; gap: 10px;
+			padding: 10px 14px; border-bottom: 1px solid var(--code-border);
+			font: 12px/1 var(--mono); color: #8b8f98;
+		}
+		.code-head .dots { display: flex; gap: 6px; }
+		.code-head .dots i { width: 10px; height: 10px; border-radius: 50%; background: #2c3038; display: block; }
+		.code-head .file { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+		.copy {
+			font: 12px/1 var(--sans); color: #b9bdc6; background: #22262d; border: 1px solid #30353d;
+			padding: 6px 10px; border-radius: 7px; cursor: pointer;
+		}
+		.copy:hover { color: #fff; background: #2a2f37; }
+		.code pre { margin: 0; padding: 18px 20px; overflow-x: auto; font: 13.5px/1.65 var(--mono); tab-size: 4; }
+		.code pre code { background: none; border: 0; padding: 0; font: inherit; color: inherit; overflow-wrap: normal; }
+
+		.tok-k { color: #ff8f5c; }
+		.tok-t { color: #8fd16a; }
+		.tok-s { color: #f2c46b; }
+		.tok-a { color: #d9a3ff; }
+		.tok-c { color: #6f7682; font-style: italic; }
+		.tok-n { color: #79c0ff; }
+		.tok-g { color: #ff8f5c; }
+		.tok-p { color: #79c0ff; }
+
+		/* ---------- sections ---------- */
+
+		section { padding: 84px 0; }
+		section.alt { background: var(--bg-soft); border-block: 1px solid var(--border); }
+		.section-head { max-width: 720px; margin-bottom: 44px; }
+		.kicker { font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--wicket-text); }
+		h2 { font-size: clamp(1.8rem, 3.6vw, 2.5rem); line-height: 1.15; letter-spacing: -.025em; margin: 10px 0 14px; font-weight: 720; }
+		h3 { font-size: 1.2rem; letter-spacing: -.01em; margin: 0 0 8px; font-weight: 680; }
+		.section-head p { color: var(--text-soft); font-size: 1.08rem; margin: 0; }
+		.section-head p + p { margin-top: 12px; }
+		p { margin: 0 0 14px; }
+		.muted { color: var(--text-soft); }
+
+		@media (max-width: 700px) { section { padding: 60px 0; } }
+
+		/* ---------- why ---------- */
+
+		.why { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+		.why .card { padding: 26px; }
+		.why .num { font: 700 2.2rem/1 var(--sans); letter-spacing: -.03em; color: var(--wicket); margin-bottom: 12px; }
+		.why .card p { color: var(--text-soft); margin: 0; }
+		.aside {
+			margin-top: 28px; display: flex; gap: 16px; align-items: flex-start;
+			padding: 20px 22px; border-radius: var(--radius); border: 1px dashed var(--border); color: var(--text-soft);
+		}
+		.aside svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--text-faint); margin-top: 2px; }
+		.aside p { margin: 0; min-width: 0; }
+
+		@media (max-width: 860px) { .why { grid-template-columns: 1fr; } }
+
+		/* ---------- cards ---------- */
+
+		.card {
+			background: var(--surface); border: 1px solid var(--border);
+			border-radius: var(--radius); box-shadow: var(--shadow);
+		}
+
+		/* ---------- steps ---------- */
+
+		.steps { display: grid; gap: 28px; counter-reset: step; }
+		.step { display: grid; grid-template-columns: 1fr 1.25fr; gap: 36px; align-items: start; }
+		.step-text { position: relative; padding-left: 58px; }
+		.step-text::before {
+			counter-increment: step; content: counter(step);
+			position: absolute; left: 0; top: -2px;
+			width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+			font-weight: 750; color: var(--wicket-text); background: var(--wicket-soft);
+		}
+		.step-text p { color: var(--text-soft); }
+		.step + .step { padding-top: 28px; border-top: 1px solid var(--border); }
+		.result {
+			display: flex; gap: 12px; align-items: center; margin-top: 16px;
+			padding: 12px 14px; border-radius: 11px; background: var(--spring-soft); color: var(--text);
+			font-size: .94rem;
+		}
+		.result svg { flex: 0 0 18px; width: 18px; height: 18px; color: var(--spring); }
+
+		@media (max-width: 900px) { .step { grid-template-columns: 1fr; gap: 18px; } }
+
+		/* ---------- features ---------- */
+
+		.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+		.feature { padding: 24px; }
+		.feature .icon {
+			width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 16px;
+			background: var(--wicket-soft); color: var(--wicket-text);
+		}
+		.feature:nth-child(3n+2) .icon { background: var(--spring-soft); color: var(--spring); }
+		.feature .icon svg { width: 22px; height: 22px; }
+		.feature p { color: var(--text-soft); margin: 0; font-size: .96rem; }
+
+		@media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
+		@media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+
+		/* ---------- guides ---------- */
+
+		.guides { display: grid; gap: 22px; }
+		.guide { display: grid; grid-template-columns: .9fr 1.1fr; gap: 32px; padding: 30px; align-items: start; }
+		.guide p { color: var(--text-soft); }
+		.guide p:last-child { margin-bottom: 0; }
+		.guide .code { box-shadow: none; }
+		.guide .codes { display: grid; gap: 14px; min-width: 0; }
+
+		@media (max-width: 900px) { .guide { grid-template-columns: 1fr; gap: 18px; padding: 22px; } }
+
+		/* ---------- tables ---------- */
+
+		.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+		table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+		th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; }
+		th { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-faint); font-weight: 650; background: var(--bg-soft); }
+		tr:last-child td { border-bottom: 0; }
+		td code { white-space: nowrap; }
+		td.desc { color: var(--text-soft); min-width: 260px; }
+
+		@media (max-width: 640px) {
+			table, tbody, tr, td { display: block; }
+			thead { display: none; }
+			tr { padding: 16px 18px; border-bottom: 1px solid var(--border); }
+			tr:last-child { border-bottom: 0; }
+			td { padding: 3px 0; border: 0; }
+			td.desc { min-width: 0; }
+			td[data-label]::before {
+				content: attr(data-label); display: block; margin-top: 8px;
+				font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-faint); font-weight: 650;
+			}
+			td code { white-space: normal; }
+		}
+
+		.subhead { margin: 52px 0 18px; }
+		.subhead p { color: var(--text-soft); max-width: 720px; }
+
+		/* ---------- checks ---------- */
+
+		.checks { list-style: none; padding: 0; margin: 28px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+		.checks li { padding: 22px; }
+		.checks strong { display: block; margin-bottom: 6px; }
+		.checks span { color: var(--text-soft); font-size: .95rem; }
+
+		@media (max-width: 900px) { .checks { grid-template-columns: 1fr; } }
+
+		/* ---------- compatibility & footer ---------- */
+
+		.compat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+		.compat .card { padding: 22px; }
+		.compat .label { font-size: .8rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .08em; font-weight: 650; }
+		.compat .value { font-size: 1.35rem; font-weight: 720; letter-spacing: -.02em; margin-top: 6px; }
+
+		@media (max-width: 860px) { .compat { grid-template-columns: repeat(2, 1fr); } }
+
+		.note { margin-top: 22px; color: var(--text-soft); }
+
+		footer { padding: 40px 0 56px; color: var(--text-faint); font-size: .92rem; border-top: 1px solid var(--border); }
+		footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; justify-content: space-between; }
+		footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+		footer a { color: var(--text-soft); text-decoration: none; }
+		footer a:hover { color: var(--text); }
+
+		@media (prefers-reduced-motion: reduce) {
+			html { scroll-behavior: auto; }
+			.btn { transition: none; }
+		}
+	</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+	<div class="wrap">
+		<a class="brand" href="#top"><img src="logo.svg" alt="" width="30" height="30">fullstack4j<span class="brand-long"> Spring Boot</span> Starter</a>
+		<nav class="nav-links" aria-label="Sections">
+			<a href="#get-started">Get started</a>
+			<a href="#inside">What&rsquo;s inside</a>
+			<a href="#testing">Testing</a>
+			<a href="#console">Dev console</a>
+			<a href="#compatibility">Compatibility</a>
+			<a class="keep" href="https://github.com/danielbartl/fullstack4j-spring-boot-starter">GitHub</a>
+			<button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+			</button>
+		</nav>
+	</div>
+</header>
+
+<main id="main">
+
+	<!-- ============ hero ============ -->
+	<div class="hero" id="top">
+		<div class="wrap hero-grid">
+			<div>
+				<span class="eyebrow"><span class="dot"></span>Wicket 10 &middot; Spring Modulith 2.1 &middot; MongoDB &middot; Spring Boot 4.1</span>
+				<h1>The fullstack4j stack, <span class="accent">in two dependencies.</span></h1>
+				<p class="lead">
+					Apache Wicket with Wicket Oat, Spring Modulith and MongoDB, at versions that work together.
+					The test starter next to it brings <code>@WicketTest</code>, Spring Modulith&rsquo;s test
+					support, and a MongoDB that Spring Modulith can actually run on.
+				</p>
+				<div class="cta">
+					<a class="btn btn-primary" href="#get-started">
+						Get started
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+					</a>
+					<a class="btn btn-secondary" href="https://github.com/danielbartl/fullstack4j-spring-boot-starter">
+						<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 8.4 22.9c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>
+						View on GitHub
+					</a>
+				</div>
+				<div class="hero-meta">
+					<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>One Wicket version</span>
+					<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Events on MongoDB, out of the box</span>
+					<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>A replica set for tests</span>
+				</div>
+			</div>
+
+			<div class="code">
+				<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">pom.xml</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;dev.jbaby&lt;/groupId&gt;
+  &lt;artifactId&gt;fullstack4j-spring-boot-starter&lt;/artifactId&gt;
+  &lt;version&gt;0.1.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;dev.jbaby&lt;/groupId&gt;
+  &lt;artifactId&gt;fullstack4j-spring-boot-starter-test&lt;/artifactId&gt;
+  &lt;version&gt;0.1.0&lt;/version&gt;
+  &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+			</div>
+		</div>
+	</div>
+
+	<!-- ============ why ============ -->
+	<section class="alt" id="why">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Why this starter</div>
+				<h2>A dozen dependencies and two traps, settled once.</h2>
+				<p>
+					A fullstack4j application builds every feature as one Spring Modulith module that holds its
+					Wicket pages, its use cases, its MongoDB documents and its events. Putting that stack
+					together by hand takes about a dozen dependencies, and two of the steps fail in ways that
+					are hard to trace back: an older Wicket slipping in through Wicket Oat, and Spring
+					Modulith&rsquo;s events failing on MongoDB&rsquo;s defaults.
+				</p>
+				<p>
+					These starters settle both once. They hold no logic of their own beyond one default
+					property and one test configuration, so everything past that point is ordinary Wicket,
+					Spring Modulith and Spring Data MongoDB.
+				</p>
+			</div>
+			<div class="why">
+				<div class="card">
+					<div class="num">2</div>
+					<h3>Dependencies</h3>
+					<p>Instead of about a dozen, plus two <code>dependencyManagement</code> entries and their version properties.</p>
+				</div>
+				<div class="card">
+					<div class="num">1</div>
+					<h3>Wicket version</h3>
+					<p>Wicket Oat brings an older Wicket with it. The starter keeps every Wicket artifact on the same version.</p>
+				</div>
+				<div class="card">
+					<div class="num">0</div>
+					<h3>Settings to add</h3>
+					<p>The UUID representation Spring Modulith needs, and a MongoDB replica set for tests and development, come with it.</p>
+				</div>
+			</div>
+			<div class="aside">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+				<p>
+					Only need Wicket on Spring Boot? The
+					<a href="https://danielbartl.github.io/wicket-spring-boot-starter/">Wicket Spring Boot Starter</a>
+					stays the smallest thing that runs Wicket on Spring Boot, for any application. This starter
+					is the opinionated bundle on top of it, for the fullstack4j stack in particular. The
+					approach behind it is on <a href="https://fullstack4j.dev">fullstack4j.dev</a>.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============ get started ============ -->
+	<section id="get-started">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Get started</div>
+				<h2>From an empty directory to events between modules.</h2>
+				<p>You need JDK 17 to 25 and a running Docker for the database.</p>
+			</div>
+
+			<div class="steps">
+				<div class="step">
+					<div class="step-text">
+						<h3>Generate a project</h3>
+						<p>
+							Tick <strong>fullstack4j</strong> on <a href="https://start.fullstack4j.dev">start.fullstack4j.dev</a>,
+							or ask it from the command line. The pom gets the two starters, and the test
+							sources a <code>TestShopApplication</code> and a first test that already use a
+							MongoDB replica set.
+						</p>
+						<p>
+							No need to tick Wicket, MongoDB, Spring Modulith or Testcontainers as well: the
+							starters bring all four. Prefer an existing Spring Boot 4.1 project? Add
+							<a href="#top">the two dependencies</a> at the top of this page.
+						</p>
+					</div>
+					<div class="code">
+						<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">Terminal</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="bash">mkdir shop &amp;&amp; cd shop
+curl https://start.fullstack4j.dev/starter.zip -o shop.zip \
+     -d dependencies=fullstack4j -d javaVersion=25 \
+     -d artifactId=shop -d name=shop
+unzip shop.zip</code></pre>
+					</div>
+				</div>
+
+				<div class="step">
+					<div class="step-text">
+						<h3>Run it on a throwaway MongoDB</h3>
+						<p>
+							<code>TestShopApplication</code> starts the application from the test classpath with
+							<code>MongoDbReplicaSetConfiguration</code>: <code>mongo:8</code> in Docker, as a
+							replica set, connected through <code>@ServiceConnection</code>. Nothing of it
+							reaches the jar you deploy.
+						</p>
+						<div class="result">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+							<span>Run <strong>./mvnw spring-boot:test-run</strong> and open <strong>http://localhost:8080</strong>.</span>
+						</div>
+					</div>
+					<div class="code">
+						<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">TestShopApplication.java</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="java">public class TestShopApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.from(ShopApplication::main)
+            .with(MongoDbReplicaSetConfiguration.class)
+            .run(args);
+    }
+}</code></pre>
+					</div>
+				</div>
+
+				<div class="step">
+					<div class="step-text">
+						<h3>Connect modules with events</h3>
+						<p>
+							One module publishes an event inside its transaction, another reacts to it in a
+							transaction of its own. Spring Modulith&rsquo;s event publication registry keeps
+							the event in MongoDB until the listener is done.
+						</p>
+						<div class="result">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+							<span>No UUID setting and no replica-set setup: both come with the starters.</span>
+						</div>
+					</div>
+					<div class="code">
+						<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">billing/internal/InvoiceRaiser.java</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="java">@Component
+class InvoiceRaiser {
+
+    private final InvoiceRepository invoices;
+
+    InvoiceRaiser(InvoiceRepository invoices) {
+        this.invoices = invoices;
+    }
+
+    @ApplicationModuleListener
+    void on(OrderPlaced order) {
+        invoices.save(new Invoice(null,
+                order.customer(), order.amount()));
+    }
+}</code></pre>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============ inside ============ -->
+	<section class="alt" id="inside">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">What&rsquo;s inside</div>
+				<h2>The whole stack, at versions that work together.</h2>
+				<p>Every library arrives at the version the others were tested with. The starters add one default and one test configuration, and nothing else.</p>
+			</div>
+			<div class="features">
+				<div class="card feature">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg></div>
+					<h3>Wicket on Spring Boot</h3>
+					<p>The <a href="https://danielbartl.github.io/wicket-spring-boot-starter/">Wicket Spring Boot Starter</a>: the Wicket filter, <code>@SpringBean</code> injection, Spring MVC and an embedded Tomcat.</p>
+				</div>
+				<div class="card feature">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+					<h3>Wicket Oat</h3>
+					<p><a href="https://github.com/danielbartl/wicket-oat">Components and themes</a> for the UI: data tables, forms, empty states and toasts, in light and dark.</p>
+				</div>
+				<div class="card feature">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="4" rx="2"/><rect x="3" y="15" width="18" height="4" rx="2"/><rect x="10" y="2" width="4" height="20" rx="2"/></svg></div>
+					<h3>Spring Modulith</h3>
+					<p>Feature modules with boundaries that are checked: <code>verify()</code> fails the build when one module reaches into another&rsquo;s internals.</p>
+				</div>
+				<div class="card feature">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></div>
+					<h3>Events through MongoDB</h3>
+					<p>Spring Modulith&rsquo;s event publication registry stores every event in MongoDB until its listeners are done.</p>
+				</div>
+				<div class="card feature">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div>
+					<h3>Spring Data MongoDB</h3>
+					<p>Documents and repositories, with the UUID representation Spring Modulith needs <a href="#configuration">already set</a>.</p>
+				</div>
+				<div class="card feature">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div>
+					<h3>One Wicket version</h3>
+					<p>The starter declares <code>wicket-core</code> and <code>wicket-extensions</code> itself, and Maven picks the declaration nearest to your project.</p>
+				</div>
+			</div>
+
+			<div class="subhead">
+				<h3>What each starter brings</h3>
+				<p>The test starter brings exactly what start.fullstack4j.dev adds to a project with Wicket, Spring Data MongoDB, Testcontainers and Spring Modulith ticked one by one.</p>
+			</div>
+			<div class="table-wrap">
+				<table>
+					<thead><tr><th>Starter</th><th>Brings</th></tr></thead>
+					<tbody>
+						<tr><td><code>fullstack4j-spring-boot-starter</code></td><td data-label="Brings" class="desc"><code>wicket-spring-boot-starter</code>, <code>wicket-oat-core</code>, <code>wicket-core</code> and <code>wicket-extensions</code> at one version, <code>spring-boot-starter-data-mongodb</code>, <code>spring-modulith-starter-core</code>, <code>spring-modulith-starter-mongodb</code></td></tr>
+						<tr><td><code>fullstack4j-spring-boot-starter-test</code></td><td data-label="Brings" class="desc"><code>wicket-spring-boot-starter-test</code> (<code>WicketTester</code>, <code>@WicketTest</code>, Spring Boot&rsquo;s test starter), <code>spring-boot-starter-data-mongodb-test</code>, <code>spring-modulith-starter-test</code> (ArchUnit included), <code>spring-boot-testcontainers</code>, <code>testcontainers-junit-jupiter</code>, <code>testcontainers-mongodb</code>, and <code>MongoDbReplicaSetConfiguration</code></td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============ testing ============ -->
+	<section id="testing">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Testing</div>
+				<h2>A real MongoDB in every test, and events that actually run.</h2>
+				<p>
+					Spring Modulith runs every <code>@ApplicationModuleListener</code> in a transaction, and
+					MongoDB only supports transactions on a replica set. A plain Testcontainers MongoDB is a
+					single node, on which the first event fails. <code>MongoDbReplicaSetConfiguration</code>
+					starts <code>mongo:8</code> as a replica set instead. Import it wherever a test touches
+					MongoDB.
+				</p>
+			</div>
+
+			<div class="guides">
+				<div class="card guide">
+					<div>
+						<h3>Test pages against MongoDB</h3>
+						<p>
+							<code>@WicketTest</code> starts your application without a servlet container and hands
+							every test a <code>WicketTester</code> with <code>@SpringBean</code> injection.
+						</p>
+						<p>Spring caches test contexts, so all tests that share a context share one container.</p>
+					</div>
+					<div class="code">
+						<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">InvoicesPageTests.java</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="java">@WicketTest
+@Import(MongoDbReplicaSetConfiguration.class)
+class InvoicesPageTests {
+
+    @Test
+    void showsAnEmptyState(WicketTester tester) {
+        tester.startPage(InvoicesPage.class);
+
+        tester.assertContains("No invoices yet");
+    }
+}</code></pre>
+					</div>
+				</div>
+
+				<div class="card guide">
+					<div>
+						<h3>Test a module and its events</h3>
+						<p>
+							<code>@ApplicationModuleTest</code> starts only the module under test. A
+							<code>Scenario</code> publishes an event and waits until the listener has changed
+							the state you are interested in.
+						</p>
+					</div>
+					<div class="code">
+						<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">billing/InvoicesTests.java</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="java">@ApplicationModuleTest
+@Import(MongoDbReplicaSetConfiguration.class)
+class InvoicesTests {
+
+    @Autowired InvoiceRepository invoices;
+
+    @Test
+    void placedOrderGetsAnInvoice(Scenario scenario) {
+        scenario.publish(new OrderPlaced("ACME", 42))
+            .andWaitForStateChange(invoices::findAll,
+                all -&gt; !all.isEmpty())
+            .andVerify(all -&gt; assertThat(all)
+                .extracting(Invoice::customer)
+                .containsExactly("ACME"));
+    }
+}</code></pre>
+					</div>
+				</div>
+
+				<div class="card guide">
+					<div>
+						<h3>Keep the modules apart</h3>
+						<p>
+							One line checks that no module uses another module&rsquo;s internals and that there
+							are no cycles between modules. ArchUnit comes with Spring Modulith&rsquo;s test
+							starter.
+						</p>
+					</div>
+					<div class="code">
+						<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">ArchitectureTests.java</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="java">class ArchitectureTests {
+
+    ApplicationModules modules =
+        ApplicationModules.of(ShopApplication.class);
+
+    @Test
+    void modulesStayOutOfEachOthersInternals() {
+        modules.verify();
+    }
+}</code></pre>
+					</div>
+				</div>
+			</div>
+
+			<div class="aside">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+				<p>
+					<strong>Moving an older project over?</strong> Replace its Wicket, Wicket Oat, Spring
+					Modulith, MongoDB and Testcontainers dependencies with the two starters, and remove the
+					<code>spring-modulith-bom</code> import and the version properties. Then delete its own
+					<code>TestcontainersConfiguration</code>, which starts a single MongoDB node, and import
+					<code>MongoDbReplicaSetConfiguration</code> wherever that was imported.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============ configuration ============ -->
+	<section class="alt" id="configuration">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Configuration</div>
+				<h2>One default, and yours always wins.</h2>
+				<p>
+					Spring Modulith&rsquo;s event publication registry stores UUIDs, which the MongoDB driver
+					refuses to encode until a UUID representation is set. The starter sets it with the lowest
+					precedence of all property sources.
+				</p>
+			</div>
+
+			<div class="table-wrap">
+				<table>
+					<thead><tr><th>Property</th><th>Default</th><th>What it does</th></tr></thead>
+					<tbody>
+						<tr><td><code>spring.mongodb.representation.uuid</code></td><td data-label="Default"><code>standard</code></td><td data-label="What it does" class="desc">How the MongoDB driver encodes UUIDs. A value of your own, in <code>application.properties</code>, as the environment variable <code>SPRING_MONGODB_REPRESENTATION_UUID</code> or on the command line, wins over the default.</td></tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="aside">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+				<p>
+					Without any value, publishing the first event fails with &ldquo;The uuidRepresentation has
+					not been specified, so the UUID cannot be encoded&rdquo;. Spring Boot 4 names the property
+					<code>spring.mongodb.representation.uuid</code>; the old
+					<code>spring.data.mongodb.uuid-representation</code> no longer has any effect.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============ dev console ============ -->
+	<section id="console">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Development console &middot; optional</div>
+				<h2>Look inside the running application with BootUI.</h2>
+				<p>
+					<a href="https://www.julien-dubois.com/boot-ui/">BootUI</a> is a local developer console
+					for Spring Boot. It is not part of the starters, because it is a development tool, and
+					Spring Boot&rsquo;s build plugin would package it into your production jar.
+				</p>
+			</div>
+
+			<div class="guides">
+				<div class="card guide">
+					<div>
+						<h3>Add it in test scope</h3>
+						<p>
+							<code>spring-boot:test-run</code> starts the application from the test classpath,
+							so the console is there while you develop and can never reach the jar you deploy.
+						</p>
+						<p>
+							BootUI switches itself on in the <code>dev</code> and <code>local</code> profiles.
+							Activate one in <code>TestShopApplication</code>, and the console is served at
+							<code>/bootui</code>, next to your Wicket pages. Your tests run without the profile
+							and stay unaffected.
+						</p>
+					</div>
+					<div class="codes">
+						<div class="code">
+							<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">pom.xml</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;com.julien-dubois.bootui&lt;/groupId&gt;
+  &lt;artifactId&gt;bootui-spring-boot-starter&lt;/artifactId&gt;
+  &lt;version&gt;2.1.0&lt;/version&gt;
+  &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+						</div>
+						<div class="code">
+							<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">TestShopApplication.java</span><button class="copy" type="button">Copy</button></div>
+<pre><code data-lang="java">SpringApplication.from(ShopApplication::main)
+    .with(MongoDbReplicaSetConfiguration.class)
+    .withAdditionalProfiles("dev")
+    .run(args);</code></pre>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<ul class="checks">
+				<li class="card"><strong>Health, logs and exceptions</strong><span>A log tail, recent exceptions and HTTP exchanges, without leaving the browser.</span></li>
+				<li class="card"><strong>Startup, beans and JVM</strong><span>Where startup time goes, which beans exist, and how memory and threads look.</span></li>
+				<li class="card"><strong>An MCP server for agents</strong><span>A local MCP server lets a coding agent look into the running application.</span></li>
+			</ul>
+			<p class="note">
+				Its database panels are built for JDBC databases and don&rsquo;t cover MongoDB. BootUI also
+				switches itself on whenever <code>spring-boot-devtools</code> is on the classpath; if you add
+				DevTools, set <code>bootui.enabled=false</code> for your tests.
+			</p>
+		</div>
+	</section>
+
+	<!-- ============ compatibility ============ -->
+	<section class="alt" id="compatibility">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Compatibility</div>
+				<h2>One Spring Boot line per release, tested end to end.</h2>
+				<p>
+					Each Spring Modulith line belongs to one Spring Boot line, so each starter release supports
+					one. An integration test shaped like a freshly generated project, depending on nothing but
+					the two starters, renders a page built from Wicket Oat components, sends an event from one
+					module to another through MongoDB, runs <code>verify()</code>, and fails the build if two
+					Wicket artifacts resolve to different versions.
+				</p>
+			</div>
+			<div class="compat">
+				<div class="card"><div class="label">Starter</div><div class="value">0.1.x</div></div>
+				<div class="card"><div class="label">Spring Boot</div><div class="value">4.1</div></div>
+				<div class="card"><div class="label">Spring Modulith</div><div class="value">2.1</div></div>
+				<div class="card"><div class="label">Apache Wicket</div><div class="value">10.11</div></div>
+				<div class="card"><div class="label">Wicket Oat</div><div class="value">0.3</div></div>
+				<div class="card"><div class="label">Java</div><div class="value">17 to 25</div></div>
+			</div>
+			<p class="note">
+				Wicket arrives through the <a href="https://danielbartl.github.io/wicket-spring-boot-starter/#compatibility">Wicket Spring Boot Starter</a> 0.2.
+				Java 26 and later need Wicket 10.12, which fixes how Wicket creates its
+				<code>@SpringBean</code> proxies there; this starter moves on once the Wicket starter does.
+			</p>
+		</div>
+	</section>
+
+	<!-- ============ not included ============ -->
+	<section id="not-included">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Not included</div>
+				<h2>Left out on purpose.</h2>
+				<p>The starters bring what every fullstack4j application needs. These stay your choice.</p>
+			</div>
+			<ul class="checks" style="margin-top: 0">
+				<li class="card"><strong>Docker Compose</strong><span>fullstack4j starts its development database with Testcontainers. A starter can&rsquo;t ship your <code>compose.yaml</code>, and Spring Boot&rsquo;s generated one starts a single MongoDB node.</span></li>
+				<li class="card"><strong>Spring Boot DevTools</strong><span>A development tool, so yours to add. It works with the Wicket starter out of the box.</span></li>
+				<li class="card"><strong>Architecture and spec tests</strong><span>The <a href="https://github.com/danielbartl/fullstack4j-skill">fullstack4j skill</a> ships <code>ArchitectureTests</code> and <code>SpecTraceabilityTests</code> to copy into a project.</span></li>
+			</ul>
+		</div>
+	</section>
+
+</main>
+
+<footer>
+	<div class="wrap">
+		<span>fullstack4j Spring Boot Starter &middot; Apache License 2.0 &middot; Apache Wicket is a trademark of The Apache Software Foundation; this project is not affiliated with it.</span>
+		<nav aria-label="Further reading">
+			<a href="https://github.com/danielbartl/fullstack4j-spring-boot-starter">README</a>
+			<a href="https://central.sonatype.com/artifact/dev.jbaby/fullstack4j-spring-boot-starter">Maven Central</a>
+			<a href="https://fullstack4j.dev">fullstack4j.dev</a>
+			<a href="https://start.fullstack4j.dev">start.fullstack4j.dev</a>
+			<a href="https://danielbartl.github.io/wicket-spring-boot-starter/">Wicket Spring Boot Starter</a>
+		</nav>
+	</div>
+</footer>
+
+<script>
+	(function () {
+		// --- theme toggle (remembers an explicit choice; otherwise follows the system) ---
+		var root = document.documentElement;
+		try {
+			var saved = localStorage.getItem("theme");
+			if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
+		} catch (e) { /* storage unavailable */ }
+		document.querySelector(".theme-toggle").addEventListener("click", function () {
+			var current = root.getAttribute("data-theme") ||
+				(matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+			var next = current === "dark" ? "light" : "dark";
+			root.setAttribute("data-theme", next);
+			try { localStorage.setItem("theme", next); } catch (e) { /* storage unavailable */ }
+		});
+
+		// --- minimal syntax highlighting ---
+		var RULES = {
+			java: [
+				["c", /\/\/[^\n]*|\/\*[\s\S]*?\*\//],
+				["s", /"(?:\\.|[^"\\])*"/],
+				["a", /@[A-Za-z_]\w*/],
+				["k", /\b(?:package|import|public|protected|private|class|interface|extends|implements|return|new|static|final|void|int|boolean|if|else|throws|super|this|null|true|false)\b/],
+				["t", /\b[A-Z][A-Za-z0-9_]*\b/],
+				["n", /\b\d+\b/]
+			],
+			xml: [
+				["c", /<!--[\s\S]*?-->/],
+				["g", /<\/?[\w.:-]+|\/?>/],
+				["s", /"[^"]*"/]
+			],
+			properties: [
+				["c", /#[^\n]*/],
+				["p", /^[\w.\-]+(?==)/m]
+			],
+			bash: [
+				["c", /#[^\n]*/],
+				["s", /"[^"]*"|'[^']*'/],
+				["k", /\b(?:mkdir|cd|curl|unzip)\b/]
+			]
+		};
+		function esc(text) {
+			return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+		}
+		function highlight(code, rules) {
+			var names = rules.map(function (r) { return r[0]; });
+			var combined = new RegExp(rules.map(function (r) { return "(" + r[1].source + ")"; }).join("|"), "gm");
+			var out = "", last = 0, m;
+			while ((m = combined.exec(code)) !== null) {
+				if (m[0] === "") { combined.lastIndex++; continue; }
+				out += esc(code.slice(last, m.index));
+				for (var i = 1; i < m.length; i++) {
+					if (m[i] !== undefined) { out += '<span class="tok-' + names[i - 1] + '">' + esc(m[0]) + "</span>"; break; }
+				}
+				last = m.index + m[0].length;
+			}
+			return out + esc(code.slice(last));
+		}
+		document.querySelectorAll("code[data-lang]").forEach(function (el) {
+			var rules = RULES[el.getAttribute("data-lang")];
+			if (rules) el.innerHTML = highlight(el.textContent, rules);
+		});
+
+		// --- copy buttons (copy the code of their block) ---
+		document.querySelectorAll(".copy").forEach(function (button) {
+			button.addEventListener("click", function () {
+				var box = button.closest(".code");
+				var text = box.querySelector("code").textContent;
+				function done(label) {
+					button.textContent = label;
+					setTimeout(function () { button.textContent = "Copy"; }, 1600);
+				}
+				if (navigator.clipboard) {
+					navigator.clipboard.writeText(text).then(function () { done("Copied"); }, function () { done("Press Ctrl+C"); });
+				} else {
+					done("Press Ctrl+C");
+				}
+			});
+		});
+	})();
+</script>
+</body>
+</html>
