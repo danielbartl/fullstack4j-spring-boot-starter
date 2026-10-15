@@ -1,0 +1,25 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The supported Java range; see the Compatibility Matrix in the README. The tests start
+        # MongoDB with Testcontainers, which uses the Docker daemon the runner comes with.
+        java: [17, 21, 25]
+    name: Java ${{ matrix.java }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - run: mvn -B verify

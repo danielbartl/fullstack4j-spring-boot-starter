@@ -1,0 +1,22 @@
+# Keeps Spring Boot, Spring Modulith, the dev.jbaby starters, the build plugins and the workflow
+# actions current. Every update is built by the Build workflow, including the integration test,
+# before it can be merged.
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins:*"
+          - "org.sonatype.central:*"
+    ignore:
+      # Wicket has to be the Wicket Spring Boot Starter's version, so it moves together with that
+      # starter, by hand
+      - dependency-name: "org.apache.wicket:*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

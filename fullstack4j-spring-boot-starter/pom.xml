@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>dev.jbaby</groupId>
+		<artifactId>fullstack4j-spring-boot-starter-parent</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>fullstack4j-spring-boot-starter</artifactId>
+	<packaging>jar</packaging>
+
+	<name>fullstack4j Spring Boot Starter</name>
+	<description>
+		Everything a fullstack4j application needs, at versions that work together: Apache Wicket with
+		the Wicket Spring Boot Starter, Wicket Oat, Spring Modulith and MongoDB.
+	</description>
+
+	<dependencies>
+		<!-- Wicket on Spring Boot: WicketFilter, @SpringBean, Spring MVC and an embedded Tomcat -->
+		<dependency>
+			<groupId>dev.jbaby</groupId>
+			<artifactId>wicket-spring-boot-starter</artifactId>
+		</dependency>
+		<!-- Oat components for the UI -->
+		<dependency>
+			<groupId>dev.jbaby</groupId>
+			<artifactId>wicket-oat-core</artifactId>
+		</dependency>
+		<!-- Declared here, although both starters above bring them, so that every Wicket artifact
+		     resolves to ${wicket.version}: Wicket Oat brings an older Wicket, and Maven picks the
+		     declaration nearest to the application. This is what spares applications a
+		     dependencyManagement entry of their own. -->
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-extensions</artifactId>
+		</dependency>
+
+		<!-- MongoDB, through Spring Data -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
+
+		<!-- Spring Modulith, with its event publication registry in MongoDB -->
+		<dependency>
+			<groupId>org.springframework.modulith</groupId>
+			<artifactId>spring-modulith-starter-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.modulith</groupId>
+			<artifactId>spring-modulith-starter-mongodb</artifactId>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

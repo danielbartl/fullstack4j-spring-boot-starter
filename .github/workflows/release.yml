@@ -1,0 +1,55 @@
+name: Release
+
+# Push a tag like v0.1.0 to release: the version comes from the tag, main stays on -SNAPSHOT.
+#
+# Needs the secrets MAVEN_CENTRAL_USERNAME / MAVEN_CENTRAL_PASSWORD (Sonatype Central Portal user token) and
+# GPG_PRIVATE_KEY / GPG_PASSPHRASE. The release is published right away; with the repository variable
+# CENTRAL_AUTO_PUBLISH set to 'false', it is uploaded and validated but waits for "Publish" in the Central Portal.
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  release:
+    name: Maven Central and GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+          # These inputs take the NAMES of the environment variables that hold the values,
+          # which the deploy step below sets from the repository secrets.
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+
+      - name: Set version from tag
+        run: mvn -B -ntp versions:set -DnewVersion="${GITHUB_REF_NAME#v}" -DgenerateBackupPoms=false
+
+      # Runs the full build, integration test included, before anything is uploaded.
+      - name: Build, test and deploy to Maven Central
+        run: |
+          if [ "${{ vars.CENTRAL_AUTO_PUBLISH }}" = "false" ]; then
+            publish="-Dcentral.autoPublish=false -Dcentral.waitUntil=validated"
+          fi
+          mvn -B -ntp -Prelease $publish deploy
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          # maven-gpg-plugin 3.2+ reads the passphrase from this variable (and signs with loopback pinentry)
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Create GitHub Release
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --title "$GITHUB_REF_NAME"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

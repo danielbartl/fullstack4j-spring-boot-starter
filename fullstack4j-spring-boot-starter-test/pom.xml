@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>dev.jbaby</groupId>
+		<artifactId>fullstack4j-spring-boot-starter-parent</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>fullstack4j-spring-boot-starter-test</artifactId>
+	<packaging>jar</packaging>
+
+	<name>fullstack4j Spring Boot Starter - Test</name>
+	<description>
+		Test support for fullstack4j applications: WicketTester and @WicketTest, Spring Modulith's test
+		support, Testcontainers, and a MongoDB replica set ready to import into tests and into the
+		application started for development.
+	</description>
+
+	<properties>
+		<!-- Default for the invoker's skipInvocation, so -DskipTests skips the integration tests too -->
+		<skipTests>false</skipTests>
+	</properties>
+
+	<!-- Applications add this module in test scope, so everything below is compile scope here: Maven
+	     only passes compile-scoped dependencies on. The same split as Spring Boot's own
+	     spring-boot-starter-<technology>-test starters. -->
+	<dependencies>
+		<dependency>
+			<groupId>dev.jbaby</groupId>
+			<artifactId>fullstack4j-spring-boot-starter</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- WicketTester at the starter's Wicket version, Spring Boot's test starter and @WicketTest -->
+		<dependency>
+			<groupId>dev.jbaby</groupId>
+			<artifactId>wicket-spring-boot-starter-test</artifactId>
+		</dependency>
+		<!-- @DataMongoTest and the rest of Spring Boot's MongoDB test support -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb-test</artifactId>
+		</dependency>
+		<!-- @ApplicationModuleTest, Scenario, and ArchUnit for ApplicationModules.verify() -->
+		<dependency>
+			<groupId>org.springframework.modulith</groupId>
+			<artifactId>spring-modulith-starter-test</artifactId>
+		</dependency>
+		<!-- A real MongoDB in Docker, connected through @ServiceConnection -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-mongodb</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Builds the projects under src/it against the freshly built starters. They inherit from
+			     spring-boot-starter-parent rather than from this build, so they consume the starters
+			     exactly the way a user's application does: through their published poms alone. The
+			     tests live in this module, the last one built, so that both starters are installed. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-invoker-plugin</artifactId>
+				<configuration>
+					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+					<settingsFile>src/it/settings.xml</settingsFile>
+					<pomIncludes>
+						<pomInclude>*/pom.xml</pomInclude>
+					</pomIncludes>
+					<goals>
+						<goal>verify</goal>
+					</goals>
+					<!-- Passed explicitly so that -Dspring-boot.version=... on the command line also
+					     reaches the test projects (the invoker otherwise filters with the pom's value). -->
+					<filterProperties>
+						<spring-boot.version>${spring-boot.version}</spring-boot.version>
+					</filterProperties>
+					<showErrors>true</showErrors>
+					<skipInvocation>${skipTests}</skipInvocation>
+				</configuration>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>install</goal>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
