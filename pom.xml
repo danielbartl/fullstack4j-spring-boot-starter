@@ -6,7 +6,7 @@
 
 	<groupId>dev.jbaby</groupId>
 	<artifactId>fullstack4j-spring-boot-starter-parent</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>fullstack4j Spring Boot Starter - Parent</name>
