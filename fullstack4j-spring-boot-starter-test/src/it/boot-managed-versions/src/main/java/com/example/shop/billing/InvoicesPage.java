@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.example.shop.billing.internal.Invoice;
-import com.example.shop.billing.internal.InvoiceRepository;
+import com.example.shop.billing.internal.Invoices;
 import dev.jbaby.wicket.oat.components.OatDataTable;
 import dev.jbaby.wicket.oat.components.OatEmptyState;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -18,7 +18,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public class InvoicesPage extends WebPage {
 
 	@SpringBean
-	private InvoiceRepository invoices;
+	private Invoices invoices;
 
 	public InvoicesPage() {
 		List<IColumn<Invoice, String>> columns = List.of(
@@ -29,7 +29,7 @@ public class InvoicesPage extends WebPage {
 
 			@Override
 			public Iterator<? extends Invoice> iterator(long first, long count) {
-				return invoices.findAll().stream().skip(first).limit(count).iterator();
+				return invoices.page(first, count).iterator();
 			}
 
 			@Override

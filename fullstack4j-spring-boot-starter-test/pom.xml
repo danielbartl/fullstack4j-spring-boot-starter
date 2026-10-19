@@ -17,8 +17,8 @@
 	<name>fullstack4j Spring Boot Starter - Test</name>
 	<description>
 		Test support for fullstack4j applications: WicketTester and @WicketTest, Spring Modulith's test
-		support, Testcontainers, and a MongoDB replica set ready to import into tests and into the
-		application started for development.
+		support, Testcontainers, a MongoDB replica set ready to import into tests and into the
+		application started for development, and the fullstack4j rules for ArchUnit.
 	</description>
 
 	<properties>
@@ -62,6 +62,11 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers-mongodb</artifactId>
+		</dependency>
+		<!-- Runs the fullstack4j rules, next to a few of its own, in one report -->
+		<dependency>
+			<groupId>com.enofex</groupId>
+			<artifactId>taikai</artifactId>
 		</dependency>
 	</dependencies>
 

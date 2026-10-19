@@ -6,7 +6,8 @@ One dependency for a [fullstack4j](https://fullstack4j.dev) application: **Apach
 [Wicket Spring Boot Starter](https://github.com/danielbartl/wicket-spring-boot-starter),
 [**Wicket Oat**](https://github.com/danielbartl/wicket-oat), **Spring Modulith** and **MongoDB**, at
 versions that work together on **Spring Boot 4.1**. A test starter next to it brings `@WicketTest`,
-Spring Modulith's test support, Testcontainers, and a MongoDB that Spring Modulith can actually run on.
+Spring Modulith's test support, Testcontainers, a MongoDB that Spring Modulith can actually run on, and
+the rules that keep a fullstack4j application in shape as it grows.
 
 ---
 
@@ -25,9 +26,9 @@ in ways that are hard to trace back:
   And it runs every `@ApplicationModuleListener` in a transaction, which MongoDB only supports on a
   replica set: a single node, which is what a plain Testcontainers MongoDB is, fails the first event.
 
-These starters settle all of that once. They hold no logic of their own beyond one default property
-and one test configuration, so everything past that point is ordinary Wicket, Spring Modulith and
-Spring Data MongoDB.
+These starters settle all of that once. They hold little of their own: one default property, one test
+configuration, and the architecture rules every fullstack4j application follows. Everything past that
+point is ordinary Wicket, Spring Modulith and Spring Data MongoDB.
 
 The [Wicket Spring Boot Starter](https://github.com/danielbartl/wicket-spring-boot-starter) stays
 what it is: the smallest thing that runs Wicket on Spring Boot, for any application. This starter is
@@ -64,10 +65,10 @@ no Wicket entry in `dependencyManagement`.
 | Starter | Brings |
 |---|---|
 | `fullstack4j-spring-boot-starter` | `wicket-spring-boot-starter` (Wicket, `@SpringBean`, Spring MVC, embedded Tomcat), `wicket-oat-core`, `spring-boot-starter-data-mongodb`, `spring-modulith-starter-core`, `spring-modulith-starter-mongodb` |
-| `fullstack4j-spring-boot-starter-test` | `wicket-spring-boot-starter-test` (`WicketTester`, `@WicketTest`, Spring Boot's test starter), `spring-boot-starter-data-mongodb-test`, `spring-modulith-starter-test` (ArchUnit included), `spring-boot-testcontainers`, `testcontainers-junit-jupiter`, `testcontainers-mongodb`, and [`MongoDbReplicaSetConfiguration`](#mongodb-in-tests-and-while-developing) |
+| `fullstack4j-spring-boot-starter-test` | `wicket-spring-boot-starter-test` (`WicketTester`, `@WicketTest`, Spring Boot's test starter), `spring-boot-starter-data-mongodb-test`, `spring-modulith-starter-test` (ArchUnit included), `spring-boot-testcontainers`, `testcontainers-junit-jupiter`, `testcontainers-mongodb`, [Taikai](https://github.com/enofex/taikai), [`MongoDbReplicaSetConfiguration`](#mongodb-in-tests-and-while-developing) and [`Fullstack4jRules`](#the-fullstack4j-rules) |
 
-The test starter brings exactly what start.fullstack4j.dev adds to a project with Wicket, Spring Data
-MongoDB, Testcontainers and Spring Modulith selected.
+The test starter brings what start.fullstack4j.dev adds to a project with Wicket, Spring Data MongoDB,
+Testcontainers and Spring Modulith selected, plus Taikai for the fullstack4j rules.
 
 ### One Wicket version
 
@@ -141,6 +142,66 @@ A project from [start.fullstack4j.dev](https://start.fullstack4j.dev) with `wick
 
 ---
 
+## The fullstack4j Rules
+
+*Since 0.3.0.* Spring Modulith's `ApplicationModules.verify()` keeps slices out of each other's
+`internal` packages and free of cycles. `Fullstack4jRules` checks what it leaves alone, with
+[Taikai](https://github.com/enofex/taikai) and ArchUnit. Run both:
+
+```java
+class ArchitectureTests {
+
+    @Test
+    void slicesStayOutOfEachOthersInternals() {
+        ApplicationModules.of(ShopApplication.class).verify();
+    }
+
+    @Test
+    void followsTheFullstack4jRules() {
+        Fullstack4jRules.builder(ShopApplication.class)
+            .build()
+            .checkAll();
+    }
+}
+```
+
+A slice is a direct subpackage of the application's package, as in Spring Modulith:
+
+| Rule | Why |
+|---|---|
+| A slice is named after a business capability, as one lowercase word, and below it there is only `<slice>.internal` | `ordering` and `billing`, not `web` or `shared`: one slice is one feature, from page to database |
+| A slice's base package holds only Wicket components, interfaces, records and enums | It is the slice's public API. Facades, documents and repositories go in `internal` |
+| MongoDB documents live in `<slice>.internal` | Documents never leave their slice; other slices get records and events |
+| Wicket components and a slice's base package use no repositories, no Spring Data and no MongoDB driver | Data goes through the slice's facade |
+| An `@ApplicationModuleListener` listens to a record, never to a document | Events are immutable records |
+| Only the slice that owns an event creates it | A slice that wants another to act calls an interface the other offers |
+| Wicket components hold no documents, and no records that aren't `Serializable` | Wicket serialises components between requests. The rule also finds documents captured by anonymous components |
+| Wicket components carry no Spring annotations such as `@Component`, `@Transactional`, `@Async` or `@EventListener` | Spring never proxies a component, so the annotations do nothing |
+| No class is named `*Service`, `*Impl` or `*Dto` | A facade is named after what it holds (`Orders`), a record after what it is |
+| No `@Autowired` fields, and no bean calls its own `@Transactional`, `@Async` or listener methods | Constructor injection; a call to itself bypasses Spring's proxy |
+| No test is `@Disabled` | A switched-off test still names its requirement, so the spec would look tested |
+
+Each violation names the class, the fullstack4j rules also say how to fix it, and `checkAll()` reports
+every violation in one run. Test classes are left out, except from the rule on `@Disabled`. The rules
+pass on a project that has no slices yet, such as a freshly generated one. Leave Taikai's
+`failOnEmpty` off: on such a project, some of Taikai's own rules would fail with it.
+
+The builder is an ordinary Taikai builder. Add rules of your own to it, or exclude classes from every
+rule:
+
+```java
+Fullstack4jRules.builder(ShopApplication.class)
+    .excludeClasses("com.acme.shop.legacy..")
+    .java(java -> java.noUsageOf(java.util.Date.class))
+    .build()
+    .checkAll();
+```
+
+Taikai brings ArchUnit 1.5.1, and Maven resolves ArchUnit to that version instead of Spring Modulith's
+1.4.2, in your application's runtime classpath too. The integration tests run Spring Modulith on it.
+
+---
+
 ## Compatibility Matrix
 
 | Starter | Spring Boot | Spring Modulith | Apache Wicket | Wicket Spring Boot Starter | Wicket Oat | Java |
@@ -158,8 +219,10 @@ Compatibility is checked by the integration test under `fullstack4j-spring-boot-
 a project shaped like one generated by Spring Initializr, inheriting from `spring-boot-starter-parent`
 and depending on nothing but the two starters. It renders a page built from Wicket Oat components with
 `@WicketTest`, sends an event from one Spring Modulith module to another through MongoDB, runs
-`ApplicationModules.verify()`, and fails the build if two Wicket artifacts resolve to different
-versions. To check another Spring Boot 4.1 patch release, run from the root:
+`ApplicationModules.verify()` and the fullstack4j rules, and fails the build if two Wicket artifacts
+resolve to different versions. Two smaller projects next to it test the rules themselves: one breaks
+each rule once and has to fail with exactly those violations, and one is a freshly generated project
+that has to pass. To check another Spring Boot 4.1 patch release, run from the root:
 
 ```bash
 mvn verify -Dspring-boot.version=4.1.0
@@ -213,9 +276,9 @@ whenever `spring-boot-devtools` is on the classpath; if you add DevTools, set
   dependency of your own.
 - **Spring Boot DevTools**, for the same reason. It works with the Wicket starter out of the box if you
   add it.
-- **Architecture and traceability tests.** The [fullstack4j
-  skill](https://github.com/danielbartl/fullstack4j-skill) ships `ArchitectureTests` and
-  `SpecTraceabilityTests` to copy into a project.
+- **Spec traceability tests.** The [fullstack4j skill](https://github.com/danielbartl/fullstack4j-skill)
+  ships `SpecTraceabilityTests`, which matches the requirements in each slice's spec to their tests.
+  The spec format belongs to the skill, so the test does too.
 
 ---
 

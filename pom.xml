@@ -56,6 +56,7 @@
 		<wicket.version>10.11.0</wicket.version>
 		<wicket-spring-boot-starter.version>0.2.0</wicket-spring-boot-starter.version>
 		<wicket-oat.version>0.4.0</wicket-oat.version>
+		<taikai.version>2.0.0</taikai.version>
 
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
@@ -110,6 +111,12 @@
 				<groupId>dev.jbaby</groupId>
 				<artifactId>wicket-oat-core</artifactId>
 				<version>${wicket-oat.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.enofex</groupId>
+				<artifactId>taikai</artifactId>
+				<version>${taikai.version}</version>
 			</dependency>
 
 			<!-- Wicket publishes no BOM, so its artifacts are managed one by one. -->

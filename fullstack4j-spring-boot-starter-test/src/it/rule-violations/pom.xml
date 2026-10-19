@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<!-- Breaks every rule Fullstack4jRules checks, once. The build has to fail (invoker.properties),
+	     and postbuild.groovy checks that the build log names each violation. -->
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>@spring-boot.version@</version>
+		<relativePath/>
+	</parent>
+
+	<groupId>com.example</groupId>
+	<artifactId>rule-violations</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<properties>
+		<java.version>17</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>@project.groupId@</groupId>
+			<artifactId>fullstack4j-spring-boot-starter</artifactId>
+			<version>@project.version@</version>
+		</dependency>
+
+		<dependency>
+			<groupId>@project.groupId@</groupId>
+			<artifactId>fullstack4j-spring-boot-starter-test</artifactId>
+			<version>@project.version@</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
