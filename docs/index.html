@@ -17,7 +17,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>fullstack4j Spring Boot Starter</title>
-	<meta name="description" content="The fullstack4j stack in two dependencies: Apache Wicket with Wicket Oat, Spring Modulith and MongoDB at versions that work together on Spring Boot 4.1, plus a test starter with a MongoDB replica set from Testcontainers.">
+	<meta name="description" content="The fullstack4j stack in two dependencies: Apache Wicket with Wicket Oat, Spring Modulith and MongoDB at versions that work together on Spring Boot 4.1, plus a test starter with a MongoDB replica set from Testcontainers and the fullstack4j architecture rules.">
 	<meta property="og:title" content="fullstack4j Spring Boot Starter">
 	<meta property="og:description" content="The fullstack4j stack, in two dependencies.">
 	<meta property="og:image" content="https://fullstack4j.dev/assets/og.png">
@@ -404,7 +404,8 @@
 				<p class="lead">
 					Apache Wicket with Wicket Oat, Spring Modulith and MongoDB, at versions that work together.
 					The test starter next to it brings <code>@WicketTest</code>, Spring Modulith&rsquo;s test
-					support, and a MongoDB that Spring Modulith can actually run on.
+					support, a MongoDB that Spring Modulith can actually run on, and the rules that keep the
+					application in shape as it grows.
 				</p>
 				<div class="cta">
 					<a class="btn btn-primary" href="#get-started">
@@ -631,14 +632,14 @@ class InvoiceRaiser {
 
 			<div class="subhead">
 				<h3>What each starter brings</h3>
-				<p>The test starter brings exactly what start.fullstack4j.dev adds to a project with Wicket, Spring Data MongoDB, Testcontainers and Spring Modulith ticked one by one.</p>
+				<p>The test starter brings what start.fullstack4j.dev adds to a project with Wicket, Spring Data MongoDB, Testcontainers and Spring Modulith ticked one by one, plus Taikai for the fullstack4j rules.</p>
 			</div>
 			<div class="table-wrap">
 				<table>
 					<thead><tr><th>Starter</th><th>Brings</th></tr></thead>
 					<tbody>
 						<tr><td><code>fullstack4j-spring-boot-starter</code></td><td data-label="Brings" class="desc"><code>wicket-spring-boot-starter</code>, <code>wicket-oat-core</code>, <code>wicket-core</code> and <code>wicket-extensions</code> at one version, <code>spring-boot-starter-data-mongodb</code>, <code>spring-modulith-starter-core</code>, <code>spring-modulith-starter-mongodb</code></td></tr>
-						<tr><td><code>fullstack4j-spring-boot-starter-test</code></td><td data-label="Brings" class="desc"><code>wicket-spring-boot-starter-test</code> (<code>WicketTester</code>, <code>@WicketTest</code>, Spring Boot&rsquo;s test starter), <code>spring-boot-starter-data-mongodb-test</code>, <code>spring-modulith-starter-test</code> (ArchUnit included), <code>spring-boot-testcontainers</code>, <code>testcontainers-junit-jupiter</code>, <code>testcontainers-mongodb</code>, and <code>MongoDbReplicaSetConfiguration</code></td></tr>
+						<tr><td><code>fullstack4j-spring-boot-starter-test</code></td><td data-label="Brings" class="desc"><code>wicket-spring-boot-starter-test</code> (<code>WicketTester</code>, <code>@WicketTest</code>, Spring Boot&rsquo;s test starter), <code>spring-boot-starter-data-mongodb-test</code>, <code>spring-modulith-starter-test</code> (ArchUnit included), <code>spring-boot-testcontainers</code>, <code>testcontainers-junit-jupiter</code>, <code>testcontainers-mongodb</code>, <code>taikai</code>, <code>MongoDbReplicaSetConfiguration</code> and <code>Fullstack4jRules</code></td></tr>
 					</tbody>
 				</table>
 			</div>
@@ -718,12 +719,15 @@ class InvoicesTests {
 
 				<div class="card guide">
 					<div>
-						<h3>Keep the modules apart</h3>
+						<h3>Keep the slices in shape</h3>
 						<p>
-							One line checks that no module uses another module&rsquo;s internals and that there
-							are no cycles between modules. ArchUnit comes with Spring Modulith&rsquo;s test
-							starter.
+							Spring Modulith&rsquo;s <code>verify()</code> checks that no module uses another
+							module&rsquo;s internals and that there are no cycles between modules.
+							<code>Fullstack4jRules</code> (since 0.3.0) checks the rest with Taikai: how slices are
+							named, what a slice&rsquo;s public package holds, where documents live, how events
+							travel, what Wicket components hold, and that no test is switched off.
 						</p>
+						<p>Every violation names its class and lands in one report.</p>
 					</div>
 					<div class="code">
 						<div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="file">ArchitectureTests.java</span><button class="copy" type="button">Copy</button></div>
@@ -735,6 +739,13 @@ class InvoicesTests {
     @Test
     void modulesStayOutOfEachOthersInternals() {
         modules.verify();
+    }
+
+    @Test
+    void followsTheFullstack4jRules() {
+        Fullstack4jRules.builder(ShopApplication.class)
+            .build()
+            .checkAll();
     }
 }</code></pre>
 					</div>
@@ -890,7 +901,7 @@ class InvoicesTests {
 			<ul class="checks" style="margin-top: 0">
 				<li class="card"><strong>Docker Compose</strong><span>fullstack4j starts its development database with Testcontainers. A starter can&rsquo;t ship your <code>compose.yaml</code>, and Spring Boot&rsquo;s generated one starts a single MongoDB node.</span></li>
 				<li class="card"><strong>Spring Boot DevTools</strong><span>A development tool, so yours to add. It works with the Wicket starter out of the box.</span></li>
-				<li class="card"><strong>Architecture and spec tests</strong><span>The <a href="https://github.com/danielbartl/fullstack4j-skill">fullstack4j skill</a> ships <code>ArchitectureTests</code> and <code>SpecTraceabilityTests</code> to copy into a project.</span></li>
+				<li class="card"><strong>Spec tests</strong><span>The <a href="https://github.com/danielbartl/fullstack4j-skill">fullstack4j skill</a> ships <code>SpecTraceabilityTests</code>, which matches each slice&rsquo;s requirements to their tests. The spec format belongs to the skill, so the test does too.</span></li>
 			</ul>
 		</div>
 	</section>
