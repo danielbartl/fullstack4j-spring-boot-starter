@@ -17,9 +17,9 @@ its use cases, its MongoDB documents and its events. Putting that stack together
 dozen dependencies, two `dependencyManagement` entries and two settings, and two of those steps fail
 in ways that are hard to trace back:
 
-- **Wicket Oat brings an older Wicket.** Without an override, `wicket-extensions` resolves to the
-  version Oat was built with, next to a newer `wicket-core`: a mix of Wicket versions that nobody
-  has tested together.
+- **Wicket Oat can bring an older Wicket.** Without an override, `wicket-extensions` resolves to the
+  version Oat was built with, which is older than `wicket-core` whenever Wicket moves on first: a mix
+  of Wicket versions that nobody has tested together.
 - **Spring Modulith needs more from MongoDB than Spring Boot's defaults give.** Its event publication
   registry stores UUIDs, which the MongoDB driver refuses to encode until a UUID representation is set.
   And it runs every `@ApplicationModuleListener` in a transaction, which MongoDB only supports on a
@@ -45,13 +45,13 @@ the latest release):
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>fullstack4j-spring-boot-starter</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>fullstack4j-spring-boot-starter-test</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -73,8 +73,8 @@ MongoDB, Testcontainers and Spring Modulith selected.
 
 The starter declares `wicket-core` and `wicket-extensions` itself, although the Wicket starter and
 Wicket Oat already bring them. Maven picks the declaration nearest to your project, so every Wicket
-artifact resolves to the Wicket version of the Wicket starter rather than to the older one Oat was
-built with. If you add another Wicket module yourself (`wicket-devutils`, a WicketStuff library),
+artifact resolves to the Wicket version of the Wicket starter rather than to the one Oat was built
+with, which can be older. If you add another Wicket module yourself (`wicket-devutils`, a WicketStuff library),
 give it that same version; the [Compatibility Matrix](#compatibility-matrix) lists it.
 
 ---
@@ -145,7 +145,8 @@ A project from [start.fullstack4j.dev](https://start.fullstack4j.dev) with `wick
 
 | Starter | Spring Boot | Spring Modulith | Apache Wicket | Wicket Spring Boot Starter | Wicket Oat | Java |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`0.1.x`** (Current) | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.3.x` | 17 to 25 |
+| **`0.2.x`** (Current) | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | 17 to 25 |
+| `0.1.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.3.x` | 17 to 25 |
 
 Each Spring Modulith line belongs to one Spring Boot line (2.0 to Boot 4.0, 2.1 to Boot 4.1), so each
 starter release supports one Spring Boot line. Java 26 and later are not supported yet: Wicket 10.11
