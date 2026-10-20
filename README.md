@@ -46,13 +46,13 @@ the latest release):
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>fullstack4j-spring-boot-starter</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 </dependency>
 
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>fullstack4j-spring-boot-starter-test</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -204,10 +204,11 @@ Taikai brings ArchUnit 1.5.1, and Maven resolves ArchUnit to that version instea
 
 ## Compatibility Matrix
 
-| Starter | Spring Boot | Spring Modulith | Apache Wicket | Wicket Spring Boot Starter | Wicket Oat | Java |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`0.2.x`** (Current) | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | 17 to 25 |
-| `0.1.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.3.x` | 17 to 25 |
+| Starter | Spring Boot | Spring Modulith | Apache Wicket | Wicket Spring Boot Starter | Wicket Oat | Taikai | Java |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`0.3.x`** (Current) | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | `2.0.x` | 17 to 25 |
+| `0.2.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | – | 17 to 25 |
+| `0.1.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.3.x` | – | 17 to 25 |
 
 Each Spring Modulith line belongs to one Spring Boot line (2.0 to Boot 4.0, 2.1 to Boot 4.1), so each
 starter release supports one Spring Boot line. Java 26 and later are not supported yet: Wicket 10.11
