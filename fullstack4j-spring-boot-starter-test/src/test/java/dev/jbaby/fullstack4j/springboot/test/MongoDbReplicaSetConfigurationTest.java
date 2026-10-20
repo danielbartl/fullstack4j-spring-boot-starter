@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.modulith.events.core.EventPublicationRegistry;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +49,9 @@ class MongoDbReplicaSetConfigurationTest {
 	@Autowired
 	EventPublicationRegistry publications;
 
+	@Autowired
+	MongoTemplate mongo;
+
 	@Test
 	void anEventPublishedInATransactionReachesItsListener() {
 		orders.place("ACME");
@@ -56,5 +60,14 @@ class MongoDbReplicaSetConfigurationTest {
 			assertThat(invoices.findAll()).extracting(Invoice::customer).containsExactly("ACME");
 			assertThat(publications.findIncompletePublications()).isEmpty();
 		});
+	}
+
+	@Test
+	void runsMongoDb80ByDefault() {
+		assertThat(serverVersion(mongo)).startsWith("8.0.");
+	}
+
+	static String serverVersion(MongoTemplate mongo) {
+		return mongo.executeCommand("{ buildInfo: 1 }").getString("version");
 	}
 }

@@ -97,7 +97,7 @@ uuidRepresentation has not been specified, so the UUID cannot be encoded".
 
 ## MongoDB in Tests and While Developing
 
-`MongoDbReplicaSetConfiguration` starts `mongo:8` in Docker as a replica set and connects the
+`MongoDbReplicaSetConfiguration` starts `mongo:8.0` in Docker as a replica set and connects the
 application to it through `@ServiceConnection`. Import it into tests:
 
 ```java
@@ -127,6 +127,41 @@ public class TestShopApplication {
 
 Docker has to be running. Spring caches test contexts, so all tests sharing a context share one
 container.
+
+### Another MongoDB image
+
+*Since 0.4.0.* The container runs `mongo:8.0`, the MongoDB line most production databases run
+(0.3.x and earlier run `mongo:8`, which follows MongoDB's newest 8.x release). To run another image,
+set `fullstack4j.test.mongodb.image`, in `src/test/resources/application.properties` for the
+project or as an environment variable for one machine:
+
+```bash
+export FULLSTACK4J_TEST_MONGODB_IMAGE=mongo:7.0
+```
+
+### MongoDB doesn't start: "Linux kernel versions 6.19 and newer has a known incompatibility"
+
+Every test that needs MongoDB fails with `Container startup failed for image mongo:8.0`, and the
+container's log says:
+
+```
+MongoDB cannot start: Linux kernel versions 6.19 and newer has a known incompatibility with this
+version of MongoDB.
+```
+
+MongoDB 8 refuses to start on Linux kernels 6.19 to 7.0.13, which break the memory allocator it
+uses ([SERVER-125742](https://jira.mongodb.org/browse/SERVER-125742)). The kernel that runs Docker
+decides, so `uname -r` there tells you. Docker Desktop brings its own kernel.
+
+- **Update the kernel** to 7.0.14 or later, which fixes the allocator. Nothing else changes.
+- Until then, **run MongoDB 7.0** on that machine (starter 0.4.0 and later):
+  `FULLSTACK4J_TEST_MONGODB_IMAGE=mongo:7.0`. It
+  uses an older allocator and runs on those kernels; Spring Modulith's events work on it as well.
+- **On GitHub Actions**, `ubuntu-latest` has such a kernel since image 20261018 (7.0.0). Use
+  `runs-on: ubuntu-22.04` (kernel 6.8), or set the variable for the job.
+
+Don't switch to MongoDB 9.0 or 8.2 for this: they use the same allocator without the check, so
+they start, but can crash later.
 
 ### Moving a generated project over
 

@@ -16,6 +16,7 @@ package dev.jbaby.fullstack4j.springboot.test;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -44,11 +45,28 @@ import org.testcontainers.utility.DockerImageName;
  * <p>
  * Spring keeps test contexts cached, so all tests sharing a context share one container.
  * </p>
+ * <p>
+ * The container runs {@value #DEFAULT_IMAGE}, the MongoDB line most production databases run. Set
+ * {@value #IMAGE_PROPERTY} to run another image, for example in {@code application.properties} or
+ * as the environment variable {@code FULLSTACK4J_TEST_MONGODB_IMAGE}. MongoDB 8 refuses to start on
+ * Linux kernels 6.19 to 7.0.13; on such a machine, {@code mongo:7.0} runs until the kernel is
+ * updated.
+ * </p>
  *
  * @author Daniel Bartl
  */
 @TestConfiguration(proxyBeanMethods = false)
 public class MongoDbReplicaSetConfiguration {
+
+	/**
+	 * The image the container runs unless {@value #IMAGE_PROPERTY} names another.
+	 */
+	public static final String DEFAULT_IMAGE = "mongo:8.0";
+
+	/**
+	 * The property naming the MongoDB image to run instead of {@value #DEFAULT_IMAGE}.
+	 */
+	public static final String IMAGE_PROPERTY = "fullstack4j.test.mongodb.image";
 
 	/**
 	 * Creates the configuration. Spring does that, for {@code @Import} and
@@ -59,7 +77,9 @@ public class MongoDbReplicaSetConfiguration {
 
 	@Bean
 	@ServiceConnection
-	MongoDBContainer mongoDbContainer() {
-		return new MongoDBContainer(DockerImageName.parse("mongo:8")).withReplicaSet();
+	MongoDBContainer mongoDbContainer(Environment environment) {
+		String image = environment.getProperty(IMAGE_PROPERTY, DEFAULT_IMAGE);
+		return new MongoDBContainer(DockerImageName.parse(image).asCompatibleSubstituteFor("mongo"))
+			.withReplicaSet();
 	}
 }
