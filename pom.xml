@@ -55,7 +55,7 @@
 		<!-- Must be the Wicket version of the Wicket Spring Boot Starter below -->
 		<wicket.version>10.11.0</wicket.version>
 		<wicket-spring-boot-starter.version>0.2.0</wicket-spring-boot-starter.version>
-		<wicket-oat.version>0.5.0</wicket-oat.version>
+		<wicket-oat.version>0.6.0</wicket-oat.version>
 		<taikai.version>2.0.0</taikai.version>
 
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
