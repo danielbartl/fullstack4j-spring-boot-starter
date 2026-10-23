@@ -46,13 +46,13 @@ the latest release):
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>fullstack4j-spring-boot-starter</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
 </dependency>
 
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>fullstack4j-spring-boot-starter-test</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -241,7 +241,8 @@ Taikai brings ArchUnit 1.5.1, and Maven resolves ArchUnit to that version instea
 
 | Starter | Spring Boot | Spring Modulith | Apache Wicket | Wicket Spring Boot Starter | Wicket Oat | Taikai | Java |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`0.5.x`** (Current) | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.5.x` | `2.0.x` | 17 to 25 |
+| **`0.6.x`** (Current) | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.6.x` | `2.0.x` | 17 to 25 |
+| `0.5.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.5.x` | `2.0.x` | 17 to 25 |
 | `0.4.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | `2.0.x` | 17 to 25 |
 | `0.3.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | `2.0.x` | 17 to 25 |
 | `0.2.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | – | 17 to 25 |
