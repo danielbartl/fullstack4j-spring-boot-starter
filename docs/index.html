@@ -403,8 +403,8 @@
 				<h1>The fullstack4j stack, <span class="accent">in two dependencies.</span></h1>
 				<p class="lead">
 					Apache Wicket with Wicket Oat, Spring Modulith and MongoDB, at versions that work together.
-					The test starter next to it brings <code>@WicketTest</code>, Spring Modulith&rsquo;s test
-					support, a MongoDB that Spring Modulith can actually run on, and the rules that keep the
+					The test starter next to it brings <code>@WicketTest</code> with wicket-testkit, Spring
+					Modulith&rsquo;s test support, a MongoDB that Spring Modulith can actually run on, and the rules that keep the
 					application in shape as it grows.
 				</p>
 				<div class="cta">
@@ -429,13 +429,13 @@
 <pre><code data-lang="xml">&lt;dependency&gt;
   &lt;groupId&gt;dev.jbaby&lt;/groupId&gt;
   &lt;artifactId&gt;fullstack4j-spring-boot-starter&lt;/artifactId&gt;
-  &lt;version&gt;0.6.0&lt;/version&gt;
+  &lt;version&gt;0.7.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
   &lt;groupId&gt;dev.jbaby&lt;/groupId&gt;
   &lt;artifactId&gt;fullstack4j-spring-boot-starter-test&lt;/artifactId&gt;
-  &lt;version&gt;0.6.0&lt;/version&gt;
+  &lt;version&gt;0.7.0&lt;/version&gt;
   &lt;scope&gt;test&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
 			</div>
@@ -639,7 +639,7 @@ class InvoiceRaiser {
 					<thead><tr><th>Starter</th><th>Brings</th></tr></thead>
 					<tbody>
 						<tr><td><code>fullstack4j-spring-boot-starter</code></td><td data-label="Brings" class="desc"><code>wicket-spring-boot-starter</code>, <code>wicket-oat-core</code>, <code>wicket-core</code> and <code>wicket-extensions</code> at one version, <code>spring-boot-starter-data-mongodb</code>, <code>spring-modulith-starter-core</code>, <code>spring-modulith-starter-mongodb</code></td></tr>
-						<tr><td><code>fullstack4j-spring-boot-starter-test</code></td><td data-label="Brings" class="desc"><code>wicket-spring-boot-starter-test</code> (<code>WicketTester</code>, <code>@WicketTest</code>, Spring Boot&rsquo;s test starter), <code>spring-boot-starter-data-mongodb-test</code>, <code>spring-modulith-starter-test</code> (ArchUnit included), <code>spring-boot-testcontainers</code>, <code>testcontainers-junit-jupiter</code>, <code>testcontainers-mongodb</code>, <code>taikai</code>, <code>MongoDbReplicaSetConfiguration</code> and <code>Fullstack4jRules</code></td></tr>
+						<tr><td><code>fullstack4j-spring-boot-starter-test</code></td><td data-label="Brings" class="desc"><code>wicket-spring-boot-starter-test</code> (<code>WicketTester</code>, <code>@WicketTest</code>, <a href="https://danielbartl.github.io/wicket-testkit/"><code>wicket-testkit</code></a>, Spring Boot&rsquo;s test starter), <code>spring-boot-starter-data-mongodb-test</code>, <code>spring-modulith-starter-test</code> (ArchUnit included), <code>spring-boot-testcontainers</code>, <code>testcontainers-junit-jupiter</code>, <code>testcontainers-mongodb</code>, <code>taikai</code>, <code>MongoDbReplicaSetConfiguration</code> and <code>Fullstack4jRules</code></td></tr>
 					</tbody>
 				</table>
 			</div>
@@ -672,7 +672,9 @@ class InvoiceRaiser {
 						<h3>Test pages against MongoDB</h3>
 						<p>
 							<code>@WicketTest</code> starts your application without a servlet container and hands
-							every test a <code>WicketTester</code> with <code>@SpringBean</code> injection.
+							every test a <code>WicketTester</code> with <code>@SpringBean</code> injection, and a
+							<code>WicketTestkit</code> that finds components by type, <code>wicket:id</code>, label
+							and row instead of by path.
 						</p>
 						<p>Spring caches test contexts, so all tests that share a context share one container.</p>
 					</div>
@@ -683,9 +685,10 @@ class InvoiceRaiser {
 class InvoicesPageTests {
 
     @Test
-    void showsAnEmptyState(WicketTester tester) {
+    void showsAnEmptyState(WicketTester tester, WicketTestkit kit) {
         tester.startPage(InvoicesPage.class);
 
+        kit.assertVisible(locate(OatEmptyState.class));
         tester.assertContains("No invoices yet");
     }
 }</code></pre>
@@ -880,7 +883,7 @@ class InvoicesTests {
 				</p>
 			</div>
 			<div class="compat">
-				<div class="card"><div class="label">Starter</div><div class="value">0.6.x</div></div>
+				<div class="card"><div class="label">Starter</div><div class="value">0.7.x</div></div>
 				<div class="card"><div class="label">Spring Boot</div><div class="value">4.1</div></div>
 				<div class="card"><div class="label">Spring Modulith</div><div class="value">2.1</div></div>
 				<div class="card"><div class="label">Apache Wicket</div><div class="value">10.11</div></div>
@@ -888,7 +891,7 @@ class InvoicesTests {
 				<div class="card"><div class="label">Java</div><div class="value">17 to 25</div></div>
 			</div>
 			<p class="note">
-				Wicket arrives through the <a href="https://danielbartl.github.io/wicket-spring-boot-starter/#compatibility">Wicket Spring Boot Starter</a> 0.2.
+				Wicket arrives through the <a href="https://danielbartl.github.io/wicket-spring-boot-starter/#compatibility">Wicket Spring Boot Starter</a> 0.3.
 				Java 26 and later need Wicket 10.12, which fixes how Wicket creates its
 				<code>@SpringBean</code> proxies there; this starter moves on once the Wicket starter does.
 			</p>

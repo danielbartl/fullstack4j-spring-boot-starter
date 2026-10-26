@@ -5,8 +5,9 @@
 One dependency for a [fullstack4j](https://fullstack4j.dev) application: **Apache Wicket** with the
 [Wicket Spring Boot Starter](https://github.com/danielbartl/wicket-spring-boot-starter),
 [**Wicket Oat**](https://github.com/danielbartl/wicket-oat), **Spring Modulith** and **MongoDB**, at
-versions that work together on **Spring Boot 4.1**. A test starter next to it brings `@WicketTest`,
-Spring Modulith's test support, Testcontainers, a MongoDB that Spring Modulith can actually run on, and
+versions that work together on **Spring Boot 4.1**. A test starter next to it brings `@WicketTest`
+with [wicket-testkit](https://github.com/danielbartl/wicket-testkit), Spring Modulith's test support,
+Testcontainers, a MongoDB that Spring Modulith can actually run on, and
 the rules that keep a fullstack4j application in shape as it grows.
 
 ---
@@ -46,13 +47,13 @@ the latest release):
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>fullstack4j-spring-boot-starter</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
 </dependency>
 
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>fullstack4j-spring-boot-starter-test</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -65,7 +66,7 @@ no Wicket entry in `dependencyManagement`.
 | Starter | Brings |
 |---|---|
 | `fullstack4j-spring-boot-starter` | `wicket-spring-boot-starter` (Wicket, `@SpringBean`, Spring MVC, embedded Tomcat), `wicket-oat-core`, `spring-boot-starter-data-mongodb`, `spring-modulith-starter-core`, `spring-modulith-starter-mongodb` |
-| `fullstack4j-spring-boot-starter-test` | `wicket-spring-boot-starter-test` (`WicketTester`, `@WicketTest`, Spring Boot's test starter), `spring-boot-starter-data-mongodb-test`, `spring-modulith-starter-test` (ArchUnit included), `spring-boot-testcontainers`, `testcontainers-junit-jupiter`, `testcontainers-mongodb`, [Taikai](https://github.com/enofex/taikai), [`MongoDbReplicaSetConfiguration`](#mongodb-in-tests-and-while-developing) and [`Fullstack4jRules`](#the-fullstack4j-rules) |
+| `fullstack4j-spring-boot-starter-test` | `wicket-spring-boot-starter-test` (`WicketTester`, `@WicketTest`, [wicket-testkit](https://github.com/danielbartl/wicket-testkit), Spring Boot's test starter), `spring-boot-starter-data-mongodb-test`, `spring-modulith-starter-test` (ArchUnit included), `spring-boot-testcontainers`, `testcontainers-junit-jupiter`, `testcontainers-mongodb`, [Taikai](https://github.com/enofex/taikai), [`MongoDbReplicaSetConfiguration`](#mongodb-in-tests-and-while-developing) and [`Fullstack4jRules`](#the-fullstack4j-rules) |
 
 The test starter brings what start.fullstack4j.dev adds to a project with Wicket, Spring Data MongoDB,
 Testcontainers and Spring Modulith selected, plus Taikai for the fullstack4j rules.
@@ -241,7 +242,8 @@ Taikai brings ArchUnit 1.5.1, and Maven resolves ArchUnit to that version instea
 
 | Starter | Spring Boot | Spring Modulith | Apache Wicket | Wicket Spring Boot Starter | Wicket Oat | Taikai | Java |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`0.6.x`** (Current) | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.6.x` | `2.0.x` | 17 to 25 |
+| **`0.7.x`** (Current) | `4.1.x` | `2.1.x` | `10.11.x` | `0.3.x` | `0.6.x` | `2.0.x` | 17 to 25 |
+| `0.6.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.6.x` | `2.0.x` | 17 to 25 |
 | `0.5.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.5.x` | `2.0.x` | 17 to 25 |
 | `0.4.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | `2.0.x` | 17 to 25 |
 | `0.3.x` | `4.1.x` | `2.1.x` | `10.11.x` | `0.2.x` | `0.4.x` | `2.0.x` | 17 to 25 |
