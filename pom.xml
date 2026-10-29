@@ -49,7 +49,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.release>17</maven.compiler.release>
 
-		<spring-boot.version>4.1.1</spring-boot.version>
+		<spring-boot.version>4.1.2</spring-boot.version>
 		<!-- The Spring Modulith line for Spring Boot 4.1; 2.0.x goes with Boot 4.0 -->
 		<spring-modulith.version>2.1.1</spring-modulith.version>
 		<!-- Must be the Wicket version of the Wicket Spring Boot Starter below -->
